@@ -18,7 +18,6 @@ def reformat_files(src_path: str, working_dir: str, show_name, season_name):
         reformat_all = False
         for file in files:
             # check if season is a special or extras
-            # check if season is a special or extras
             if "season" in season_name.lower():
                 season_number = season_name.split(" ")[1]
                 # Koukyuu no Karasu [02][Ma10p_1080p][x265_flac]
@@ -40,31 +39,46 @@ def reformat_files(src_path: str, working_dir: str, show_name, season_name):
                     new_file_name = f"{show_name} S{season_number}E{episode_number}.{ass_lang}.{file_ext}"
                 else:
                     new_file_name = f"{show_name} S{season_number}E{episode_number}.{file_ext}"
-                if not reformat_all:
-                    print(f"Renaming \n\tOld: {file} \n\tNew: {new_file_name}")
-                    move = False
-                    while not move:
-                        print(f"Is this correct? [y/n/A(ll)/q(uit)]")
-                        response = input()
-                        if response.lower() == "y":
-                            move = True
-                        elif response.lower() == "n":
-                            print(f"Please enter the new file name for {file}")
-                            new_file_name = input()
-                            move = True
-                        elif response.lower() == "a":
-                            reformat_all = True
-                            move = True
-                        elif response.lower() == "q":
-                            print("Quitting")
-                            exit(0)
-                if reformat_all or move:
-                    print(f"Moving {os.path.join(root, file)} to "
-                          f"{os.path.join(working_dir, new_file_name)}")
-                    shutil.move(os.path.join(root, file), os.path.join(working_dir, new_file_name))
-            else:
-                print(f"Moving {os.path.join(root, file)} to {os.path.join(working_dir, file)}")
-                shutil.move(os.path.join(root, file), os.path.join(working_dir, file))
+
+            elif "special" in season_name.lower() or "extra" in season_name.lower():
+                season_number = "00"
+                print(f"Please enter the episode number for {file}")
+                episode_number = input()
+                # make leading 0 if episode number is less than 10
+                if int(episode_number) < 10:
+                    episode_number = f"0{episode_number}"
+                file_ext = file.split(".")[-1]
+                if file_ext == "ass":
+                    if file_ext == "ass":
+                        ass_lang = file.split(".")[-2]
+                        new_file_name = f"{show_name} S{season_number}E{episode_number}.{ass_lang}.{file_ext}"
+                    else:
+                        new_file_name = f"{show_name} S{season_number}E{episode_number}.{file_ext}"
+            # else:
+            #     print(f"Moving {os.path.join(root, file)} to {os.path.join(working_dir, file)}")
+            #     shutil.move(os.path.join(root, file), os.path.join(working_dir, file))
+            if not reformat_all:
+                print(f"Renaming \n\tOld: {file} \n\tNew: {new_file_name}")
+                move = False
+                while not move:
+                    print(f"Is this correct? [y/n/A(ll)/q(uit)]")
+                    response = input()
+                    if response.lower() == "y":
+                        move = True
+                    elif response.lower() == "n":
+                        print(f"Please enter the new file name for {file}")
+                        new_file_name = input()
+                        move = True
+                    elif response.lower() == "a":
+                        reformat_all = True
+                        move = True
+                    elif response.lower() == "q":
+                        print("Quitting")
+                        exit(0)
+            if reformat_all or move:
+                print(f"Moving {os.path.join(root, file)} to "
+                      f"{os.path.join(working_dir, new_file_name)}")
+                shutil.move(os.path.join(root, file), os.path.join(working_dir, new_file_name))
 
 
 def main():
