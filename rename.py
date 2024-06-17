@@ -84,6 +84,14 @@ def main():
     dest_path = args.dest
     print(f"Please enter the show name: ")
     show_name = input()
+    print(f"Please enter the show year: ")
+    show_year = input()
+    # validate show year
+    if not show_year.isdigit():
+        print("Show year must be a number")
+        exit(1)
+    show_name = f"{show_name} ({show_year})"
+    print(f"Show name: {show_name}\n\n\n")
     for root, dirs, files in os.walk(src_path):
         if root == src_path and len(dirs) > 0:
             print("Multiple seasons found now processing each directory")
