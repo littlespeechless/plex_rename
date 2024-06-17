@@ -102,6 +102,11 @@ def main():
             print(f"Copied files will be saved in {working_dir}")
             os.makedirs(working_dir, exist_ok=True)
             reformat_files(src_path, working_dir, show_name, season_name)
+    print("Cleaning up empty directories")
+    for root, dirs, files in os.walk(src_path):
+        if not dirs and not files:
+            os.rmdir(root)
+    print("Done")
 
 
 if __name__ == '__main__':
