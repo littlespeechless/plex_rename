@@ -49,11 +49,10 @@ def reformat_files(src_path: str, working_dir: str, show_name, season_name):
                     episode_number = f"0{episode_number}"
                 file_ext = file.split(".")[-1]
                 if file_ext == "ass":
-                    if file_ext == "ass":
-                        ass_lang = file.split(".")[-2]
-                        new_file_name = f"{show_name} S{season_number}E{episode_number}.{ass_lang}.{file_ext}"
-                    else:
-                        new_file_name = f"{show_name} S{season_number}E{episode_number}.{file_ext}"
+                    ass_lang = file.split(".")[-2]
+                    new_file_name = f"{show_name} S{season_number}E{episode_number}.{ass_lang}.{file_ext}"
+                else:
+                    new_file_name = f"{show_name} S{season_number}E{episode_number}.{file_ext}"
             # else:
             #     print(f"Moving {os.path.join(root, file)} to {os.path.join(working_dir, file)}")
             #     shutil.move(os.path.join(root, file), os.path.join(working_dir, file))
