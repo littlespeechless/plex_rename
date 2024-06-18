@@ -128,7 +128,7 @@ def main():
         else:
             print(f"Please enter the season name: i.e Season 01, Specials, Extras")
             season_name = input()
-            working_dir = os.path.join(dest_path, show_name, season_name)
+            working_dir = os.path.join(dest_path, show_folder_name, season_name)
             print(f"Copied files will be saved in {working_dir}")
             os.makedirs(working_dir, exist_ok=True)
             reformat_files(src_path, working_dir, show_name, season_name)
