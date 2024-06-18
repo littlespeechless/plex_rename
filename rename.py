@@ -49,7 +49,7 @@ def reformat_files(src_path: str, working_dir: str, show_name, season_name):
                 episode_number = input()
                 # make leading 0 if episode number is less than 10
                 if int(episode_number) < 10:
-                    episode_number = f"0{episode_number}"
+                    episode_number = f"0{int(episode_number)}"
                 file_ext = file.split(".")[-1]
                 if file_ext == "ass":
                     ass_lang = file.split(".")[-2]
