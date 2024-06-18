@@ -103,8 +103,12 @@ def main():
     if not show_year.isdigit():
         print("Show year must be a number")
         exit(1)
+    # show_folder_name = f"{show_name} ({show_year})"
     show_name = f"{show_name} ({show_year})"
-    print(f"Show name: {show_name}\n\n\n")
+    print(f"Please enter tvdb show id: ")
+    tvdb_id = input()
+    show_folder_name = "{} {{tvdb-{}}}]".format(show_name, tvdb_id)
+    print(f"Show folder name: {show_folder_name}\n\n\n")
     for root, dirs, files in os.walk(src_path):
         if root == src_path and len(dirs) > 0:
             print("Multiple seasons found now processing each directory")
@@ -112,7 +116,7 @@ def main():
                 folder: str
                 print(f"Processing {folder}, please enter the season name: i.e Season 01, Specials, Extras")
                 season_name = input()
-                working_dir = os.path.join(dest_path, show_name, season_name)
+                working_dir = os.path.join(dest_path, show_folder_name, season_name)
                 print(f"Copied files will be saved in {working_dir}")
                 os.makedirs(working_dir, exist_ok=True)
                 reformat_files(os.path.join(src_path, folder), working_dir, show_name, season_name)
