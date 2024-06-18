@@ -105,9 +105,14 @@ def main():
         exit(1)
     show_folder_name = f"{show_name} ({show_year})"
     # show_name = f"{show_name} ({show_year})"
-    print(f"Please enter tvdb show id: ")
-    tvdb_id = input()
-    show_folder_name = "{} [tvdb-{}]".format(show_folder_name, tvdb_id)
+    print("Force db id? [y/n]")
+    force_db_id = input()
+    if force_db_id.lower() == "y":
+        print(f"Please enter db show id: i.e tvdb-123456, anidb-12345, tmdb-xxxx")
+        db_id = input()
+        show_folder_name = "{} [{}]".format(show_folder_name, db_id)
+    elif force_db_id.lower() == "n":
+        pass
     print(f"Show folder name: {show_folder_name}\n\n\n")
     for root, dirs, files in os.walk(src_path):
         if root == src_path and len(dirs) > 0:
