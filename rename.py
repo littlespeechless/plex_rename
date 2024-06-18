@@ -103,11 +103,11 @@ def main():
     if not show_year.isdigit():
         print("Show year must be a number")
         exit(1)
-    # show_folder_name = f"{show_name} ({show_year})"
-    show_name = f"{show_name} ({show_year})"
+    show_folder_name = f"{show_name} ({show_year})"
+    # show_name = f"{show_name} ({show_year})"
     print(f"Please enter tvdb show id: ")
     tvdb_id = input()
-    show_folder_name = "{} {{tvdb-{}}}]".format(show_name, tvdb_id)
+    show_folder_name = "{} [tvdb-{}]".format(show_folder_name, tvdb_id)
     print(f"Show folder name: {show_folder_name}\n\n\n")
     for root, dirs, files in os.walk(src_path):
         if root == src_path and len(dirs) > 0:
