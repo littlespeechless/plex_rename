@@ -22,7 +22,7 @@ def reformat_files(src_path: str, working_dir: str, show_name, season_name):
                 season_number = season_name.split(" ")[1]
                 # Koukyuu no Karasu [02][Ma10p_1080p][x265_flac]
                 # find the episode number in [] using regex
-                regexs = [r"\[(\d+)\]", r"-\s(\d+)\s", r"S\d+E(\d+)", r"\s(\d+)."]
+                regexs = [r"\[(\d+)\]", r"-\s(\d+)\s", r"\s(\d+)\s", r"S\d+E(\d+)", r"\s(\d+)."]
                 for regex in regexs:
                     episode_number = re.search(regex, file)
                     if episode_number:
@@ -46,7 +46,7 @@ def reformat_files(src_path: str, working_dir: str, show_name, season_name):
             file_ext = file.split(".")[-1]
             if file_ext == "ass":
                 ass_lang = file.split(".")[-2]
-                if len(ass_lang) > 2:
+                if len(ass_lang) > 3:
                     # case of no ass lang
                     new_file_name = f"{show_name} S{season_number}E{episode_number}.{file_ext}"
                 else:
