@@ -63,8 +63,12 @@ def reformat_files(src_path: str, working_dir: str, show_name, season_name):
                     if response.lower() == "y":
                         move = True
                     elif response.lower() == "n":
-                        print(f"Please enter the new file name for {file}")
-                        new_file_name = input()
+                        print(f"Please enter the show epsoide name for {file}")
+                        season_number = input()
+                        new_file_name = f"{show_name} S{season_number}E{episode_number}.{file_ext}"
+                        # check if is ass
+                        if file_ext == "ass" and len(ass_lang) <=3:
+                            new_file_name = f"{show_name} S{season_number}E{episode_number}.{ass_lang}.{file_ext}"
                         move = True
                     elif response.lower() == "a":
                         reformat_all = True
