@@ -65,6 +65,8 @@ def reformat_files(src_path: str, working_dir: str, show_name, season_name):
                     elif response.lower() == "n":
                         print(f"Please enter the show epsoide name for {file}")
                         episode_number = input()
+                        if int(episode_number) < 10:
+                            episode_number = f"0{int(episode_number)}"
                         new_file_name = f"{show_name} S{season_number}E{episode_number}.{file_ext}"
                         # check if is ass
                         if file_ext == "ass" and len(ass_lang) <=3:
