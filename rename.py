@@ -118,6 +118,7 @@ def main():
     elif force_db_id.lower() == "n":
         pass
     print(f"Show folder name: {show_folder_name}\n\n\n")
+    
     for root, dirs, files in os.walk(src_path):
         if root == src_path and len(dirs) > 0:
             print("Multiple seasons found now processing each directory")
@@ -137,11 +138,16 @@ def main():
             print(f"Copied files will be saved in {working_dir}")
             os.makedirs(working_dir, exist_ok=True)
             reformat_files(src_path, working_dir, show_name, season_name)
-    print("Cleaning up empty directories")
-    for root, dirs, files in os.walk(src_path):
-        if not dirs and not files:
-            os.rmdir(root)
-    print("Done")
+    print("Is continue? [y/n]")
+    c = input ()
+    if c.lower() == "y":
+        pass
+    elif c == "n":
+        print("Cleaning up empty directories")
+        for root, dirs, files in os.walk(src_path):
+            if not dirs and not files:
+                os.rmdir(root)
+        print("Done")
 
 
 if __name__ == '__main__':
