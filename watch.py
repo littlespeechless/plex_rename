@@ -125,10 +125,10 @@ def main():
         add_watch(source, destination, show_name, season, watch_db)
 
     elif args.list:
-        print("Listing all watches")
+        print(f"Listing all watches, {len(watch_db)} total watches")
         for key, value in watch_db.items():
             # pretty print the watch database
-            print(f"Show Name: {value['show_name']}:")
+            print(f"Show Name: {value['show_name']}")
             print(f"\tSeason: {value['season']}\n"
                   f"\tWatch Source: {key}\n"
                   f"\tPlex Destination: {value['dest']}\n"
@@ -166,10 +166,11 @@ def main():
             print(f"Watch {source} not found")
     elif args.refresh:
         print("Refreshing the library")
+        logging.info(f"Refreshing all {len(watch_db)} watches")
         for key, value in watch_db.items():
             print(f"Refreshing {key}")
             rename.reformat_files_for_watch(key, value['dest'], value['show_name'], value['season'])
-            logging.info(f"Refreshing {key}")
+            # logging.info(f"Refreshing {key}")
     # save the watch database
     if args.add or args.remove or args.update:
         with open(watch_db_path, 'w') as f:
