@@ -19,16 +19,16 @@ def add_watch(source, destination, show_name, season, watch_db):
     """
     if source in watch_db:
         print("Watch already exists")
-        logger.error(f"Watch already exists")
+        logging.error(f"Watch already exists")
         exit(1)
     if not os.path.exists(source):
         print("Source does not exist")
-        logger.error(f"Source does not exist")
+        logging.error(f"Source does not exist")
         exit(1)
     if not os.path.exists(destination):
         # process no destination found case
         print("Destination does not exist")
-        logger.error(f"Watch Add Destination does not exist")
+        logging.error(f"Watch Add Destination does not exist")
         print("Starting Rename process")
         print("Please enter the plex library root path")
         plex_root = input()
@@ -39,11 +39,11 @@ def add_watch(source, destination, show_name, season, watch_db):
         # create the destination folder
         working_dir = os.path.join(plex_root, show_folder_name, season)
         print(f"Creating destination folder {working_dir}")
-        logger.info(f"Creating destination folder {working_dir}")
+        logging.info(f"Creating destination folder {working_dir}")
         if not os.path.exists(working_dir):
             os.makedirs(working_dir, exist_ok=True)
         # reformat the files and move them to the destination
-        rename.reformat_files_for_watch(source, working_dir, show_name, season, logger)
+        rename.reformat_files_for_watch(source, working_dir, show_name, season)
         watch_db[source] = {"dest": working_dir, "show_name": show_name, "season": season}
         print(f"Watch {source} added successfully, with destination {working_dir}, "
               f"show_name {show_name}, season {season}")
@@ -97,7 +97,7 @@ def main():
             print(
                 f"Adding a new watch with source {args.src}, destination {args.dest}, "
                 f"show-name {args.show_name}, season {args.season}")
-            logger.info(f"Adding a new watch with source {args.src}, destination {args.dest}, "
+            logging.info(f"Adding a new watch with source {args.src}, destination {args.dest}, "
                         f"show-names {args.show_name}, season {args.season}")
             source = args.src
             destination = args.dest
@@ -162,11 +162,11 @@ def main():
             print(f"Watch {source} not found")
     elif args.refresh:
         print("Refreshing the library")
-        logger.info(f"Refreshing all {len(watch_db)} watches")
+        logging.info(f"Refreshing all {len(watch_db)} watches")
         for key, value in watch_db.items():
             print(f"Refreshing {key}")
-            logger.info(f"Refreshing {key}")
-            rename.reformat_files_for_watch(key, value['dest'], value['show_name'], value['season'], logger)
+            logging.info(f"Refreshing {key}")
+            rename.reformat_files_for_watch(key, value['dest'], value['show_name'], value['season'])
 
     # save the watch database
     if args.add or args.remove or args.update:
@@ -175,18 +175,26 @@ def main():
 
 
 if __name__ == '__main__':
-    # # add logger
-    # logging.basicConfig(level=logging.INFO,
-    #                     filename='watch.log',
-    #                     filemode='a',
-    #                     format='%(asctime)s - %(levelname)s - %(message)s',
-    #                     datefmt='%Y-%m-%d %H:%M:%S')
 
     # Configure logging with RotatingFileHandler
-    logger = logging.getLogger('watch_logger')
-    logger.setLevel(logging.INFO)
-    handler = RotatingFileHandler('watch.log', maxBytes=10 * 1024 * 1024, backupCount=2)  # 5 MB file size
-    formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
+
+    # Create a RotatingFileHandler
+    handler = RotatingFileHandler('watch.log', maxBytes=10 * 1024 * 1024, backupCount=2)
+    handler.setLevel(logging.INFO)
+
+    # Optionally set a formatter
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
     handler.setFormatter(formatter)
-    logger.addHandler(handler)
+
+    # Configure the root logger
+    root_logger = logging.getLogger()
+    root_logger.setLevel(logging.INFO)
+    root_logger.addHandler(handler)
+
+    # logger = logging.getLogger('watch_logger')
+    # logger.setLevel(logging.INFO)
+    # handler = RotatingFileHandler('watch.log', maxBytes=10 * 1024 * 1024, backupCount=2)  # 5 MB file size
+    # formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
+    # handler.setFormatter(formatter)
+    # logger.addHandler(handler)
     main()
