@@ -127,8 +127,14 @@ def main():
     elif args.list:
         print("Listing all watches")
         for key, value in watch_db.items():
-            print(f"Source: {key}, "
-                  f"Destination: {value['dest']}, Show Name: {value['show_name']}, Season: {value['season']}")
+            # pretty print the watch database
+            print(f"Show Name: {value['show_name']}:")
+            print(f"\tSeason: {value['season']}\n"
+                  f"\tWatch Source: {key}\n"
+                  f"\tPlex Destination: {value['dest']}\n"
+                  )
+            print("-" * 50)
+
     elif args.remove:
         if args.src:
             source = args.src
