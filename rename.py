@@ -49,10 +49,18 @@ def reformat_files_for_watch(src_path: str, working_dir: str, show_name, season_
                         new_file_name = f"{show_name} S{season_number}E{episode_number}.{ass_lang}.{file_ext}"
                 else:
                     new_file_name = f"{show_name} S{season_number}E{episode_number}.{file_ext}"
-                print(f"Moving {os.path.join(root, file)} to "
-                      f"{os.path.join(working_dir, new_file_name)}")
-                logging.info(f"Moving {os.path.join(root, file)} to "
-                             f"{os.path.join(working_dir, new_file_name)}")
+                file_path = os.path.join(root, file)
+                moving_path = os.path.join(working_dir, new_file_name)
+                print(f"Moving {file_path} to "
+                      f"{moving_path}")
+                logging.info(f"Moving {file_path} to "
+                             f"{moving_path}")
+                # final check
+                if not os.path.exists(os.path.dirname(moving_path)):
+                    print(f"Failed moving, {moving_path} parent dir not exist")
+                    logging.error(f"Failed moving, {moving_path} parent dir "
+                                  f"{os.path.exists(os.path.dirname(moving_path))}not exist")
+                    exit(-1)
                 shutil.move(os.path.join(root, file), os.path.join(working_dir, new_file_name))
             else:
                 logging.error(f"Invalid Season name {season_name}")

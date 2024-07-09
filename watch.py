@@ -27,13 +27,18 @@ def add_watch(source, destination, show_name, season, watch_db):
     if not os.path.exists(destination):
         # process no destination found case
         print("Destination does not exist")
-        logging.error(f"Destination does not exist")
+        logging.error(f"Watch Add Destination does not exist")
         print("Starting Rename process")
         print("Please enter the plex library root path")
         plex_root = input()
+        if plex_root[0] == "~":
+            plex_root = os.path.expanduser(plex_root)
+        # plex_root = os.path.abspath(plex_root)
         show_name, show_folder_name = rename.get_show_info(show_name=show_name)
         # create the destination folder
-        working_dir = os.path.join(plex_root, show_name, season)
+        working_dir = os.path.join(plex_root, show_folder_name, season)
+        print(f"Creating destination folder {working_dir}")
+        logging.info(f"Creating destination folder {working_dir}")
         if not os.path.exists(working_dir):
             os.makedirs(working_dir, exist_ok=True)
         # reformat the files and move them to the destination
@@ -113,13 +118,17 @@ def main():
             show_name = input()
             print("Please enter the season str")
             season = input()
+        if source[0] == "~":
+            source = os.path.expanduser(source)
+        if destination[0] == "~":
+            destination = os.path.expanduser(destination)
         add_watch(source, destination, show_name, season, watch_db)
 
     elif args.list:
         print("Listing all watches")
         for key, value in watch_db.items():
             print(f"Source: {key}, "
-                  f"Destination: {value['dest']}, Show Folder: {value['show_name']}, Season: {value['season']}")
+                  f"Destination: {value['dest']}, Show Name: {value['show_name']}, Season: {value['season']}")
     elif args.remove:
         if args.src:
             source = args.src
