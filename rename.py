@@ -22,7 +22,7 @@ def reformat_files(src_path: str, working_dir: str, show_name, season_name):
                 season_number = season_name.split(" ")[1]
                 # Koukyuu no Karasu [02][Ma10p_1080p][x265_flac]
                 # find the episode number in [] using regex
-                regexs = [r"\[(\d+)\]", r"-\s(\d+)\s", r"EP(\d+)",r"S\d+E(\d+)", r"\s(\d+).", r"\s(\d+)\s",]
+                regexs = [r"\[(\d+)\]", r"-\s(\d+)\s", r"EP(\d+)", r"S\d+E(\d+)", r"\s(\d+).", r"\s(\d+)\s", ]
                 for regex in regexs:
                     episode_number = re.search(regex, file)
                     if episode_number:
@@ -69,7 +69,7 @@ def reformat_files(src_path: str, working_dir: str, show_name, season_name):
                             episode_number = f"0{int(episode_number)}"
                         new_file_name = f"{show_name} S{season_number}E{episode_number}.{file_ext}"
                         # check if is ass
-                        if file_ext == "ass" and len(ass_lang) <=3:
+                        if file_ext == "ass" and len(ass_lang) <= 3:
                             new_file_name = f"{show_name} S{season_number}E{episode_number}.{ass_lang}.{file_ext}"
                         move = True
                     elif response.lower() == "a":
@@ -84,21 +84,7 @@ def reformat_files(src_path: str, working_dir: str, show_name, season_name):
                 shutil.move(os.path.join(root, file), os.path.join(working_dir, new_file_name))
 
 
-def main():
-    """
-    rename downloaded media to plex library format
-
-    """
-    # add argparse
-    parser = argparse.ArgumentParser(description='rename downloaded media to plex library format')
-    # add arguments
-    parser.add_argument('--src', type=str, required=True, help='Path to the download media files')
-    parser.add_argument('--dest', type=str, required=True, help='Path to the destination folder')
-    # parse arguments
-    args = parser.parse_args()
-    # print arguments
-    src_path = args.src
-    dest_path = args.dest
+def start_process(src_path, dest_path):
     print(f"Please enter the show name: ")
     show_name = input()
     print(f"Please enter the show year: ")
@@ -118,7 +104,7 @@ def main():
     elif force_db_id.lower() == "n":
         pass
     print(f"Show folder name: {show_folder_name}\n\n\n")
-    
+    working_dir = None
     for root, dirs, files in os.walk(src_path):
         if root == src_path and len(dirs) > 0:
             print("Multiple seasons found now processing each directory")
@@ -139,7 +125,7 @@ def main():
             os.makedirs(working_dir, exist_ok=True)
             reformat_files(src_path, working_dir, show_name, season_name)
     print("Is continue? [y/n]")
-    c = input ()
+    c = input()
     if c.lower() == "y":
         pass
     elif c == "n":
@@ -148,6 +134,25 @@ def main():
             if not dirs and not files:
                 os.rmdir(root)
         print("Done")
+    return working_dir if working_dir else None
+
+
+def main():
+    """
+    rename downloaded media to plex library format
+
+    """
+    # add argparse
+    parser = argparse.ArgumentParser(description='rename downloaded media to plex library format')
+    # add arguments
+    parser.add_argument('--src', type=str, required=True, help='Path to the download media files')
+    parser.add_argument('--dest', type=str, required=True, help='Path to the destination folder')
+    # parse arguments
+    args = parser.parse_args()
+    # print arguments
+    src_path = args.src
+    dest_path = args.dest
+    start_process(src_path, dest_path)
 
 
 if __name__ == '__main__':

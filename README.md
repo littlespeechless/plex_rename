@@ -1,6 +1,8 @@
-# plex_rename
-rename downloaded anime to plex lib format
+# plex_utils
+A collection of utilities for managing Plex libraries
 
 ## Usage
-```python plex_rename.py --src <source dir> -dest <plex lib dir>```
-
+### rename.py
+```python rename.py --src <source dir> -dest <plex lib dir>```
+### watch.py
+```python watch.py --src <source dir> -dest <plex lib dir>```
