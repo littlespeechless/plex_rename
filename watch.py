@@ -125,7 +125,8 @@ def main():
         add_watch(source, destination, show_name, season, watch_db)
 
     elif args.list:
-        print(f"Listing all watches, {len(watch_db)} total watches")
+        print(f"Listing all watches, {len(watch_db)} total watches\n")
+        print("-" * 50)
         for key, value in watch_db.items():
             # pretty print the watch database
             print(f"Show Name: {value['show_name']}")
