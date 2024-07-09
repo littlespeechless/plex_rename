@@ -6,6 +6,47 @@ import os.path
 import rename
 
 
+def add_watch(source, destination, show_name, season, watch_db):
+    """
+    Add a new watch
+    Args:
+        source: Source of the watch
+        destination: Destination of the watch
+        show_name: Show name
+        season: Season number
+        watch_db: Watch database
+    """
+    if source in watch_db:
+        print("Watch already exists")
+        logging.warning(f"Watch already exists")
+        exit(1)
+    if not os.path.exists(source):
+        print("Source does not exist")
+        logging.error(f"Source does not exist")
+        exit(1)
+    if not os.path.exists(destination):
+        # process no destination found case
+        print("Destination does not exist")
+        logging.error(f"Destination does not exist")
+        print("Starting Rename process")
+        print("Please enter the plex library root path")
+        plex_root = input()
+        show_name, show_folder_name = rename.get_show_info(show_name=show_name)
+        # create the destination folder
+        working_dir = os.path.join(plex_root, show_name, season)
+        if not os.path.exists(working_dir):
+            os.makedirs(working_dir, exist_ok=True)
+        # reformat the files and move them to the destination
+        rename.reformat_files_for_watch(source, working_dir, show_name, season)
+        watch_db[source] = {"dest": working_dir, "show_name": show_name, "season": season}
+        print(f"Watch {source} added successfully, with destination {working_dir}, "
+              f"show_name {show_name}, season {season}")
+    else:
+        watch_db[source] = {"dest": destination, "show_name": show_name, "season": season}
+        print(f"Watch {source} added successfully, with destination {destination}, "
+              f"show folder {show_name}, season {season}")
+
+
 def main():
     """
     Main function for the watch module.
@@ -72,35 +113,8 @@ def main():
             show_name = input()
             print("Please enter the season str")
             season = input()
-        if source in watch_db:
-            print("Watch already exists")
-            logging.warning(f"Watch already exists")
-            exit(1)
-        if not os.path.exists(source):
-            print("Source does not exist")
-            logging.error(f"Source does not exist")
-            exit(1)
-        if not os.path.exists(destination):
-            # process no destination found case
-            print("Destination does not exist")
-            logging.error(f"Destination does not exist")
-            print("Starting Rename process")
-            print("Please enter the plex library root path")
-            plex_root = input()
-            show_name, show_folder_name = rename.get_show_info(show_name=show_name)
-            # create the destination folder
-            working_dir = os.path.join(plex_root, show_name, season)
-            if not os.path.exists(working_dir):
-                os.makedirs(working_dir, exist_ok=True)
-            # reformat the files and move them to the destination
-            rename.reformat_files_for_watch(source, working_dir, show_name, season)
-            watch_db[source] = {"dest": working_dir, "show_name": show_name, "season": season}
-            print(f"Watch {source} added successfully, with destination {working_dir}, "
-                  f"show_name {show_name}, season {season}")
-        else:
-            watch_db[source] = {"dest": destination, "show_name": show_name, "season": season}
-            print(f"Watch {source} added successfully, with destination {destination}, "
-                  f"show folder {show_name}, season {season}")
+        add_watch(source, destination, show_name, season, watch_db)
+
     elif args.list:
         print("Listing all watches")
         for key, value in watch_db.items():
@@ -140,6 +154,7 @@ def main():
         for key, value in watch_db.items():
             print(f"Refreshing {key}")
             rename.reformat_files_for_watch(key, value['dest'], value['show_name'], value['season'])
+            logging.info(f"Refreshing {key}")
     # save the watch database
     if args.add or args.remove or args.update:
         with open(watch_db_path, 'w') as f:
