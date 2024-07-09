@@ -5,7 +5,7 @@ import re
 import shutil
 
 
-def reformat_files_for_watch(src_path: str, working_dir: str, show_name, season_name):
+def reformat_files_for_watch(src_path: str, working_dir: str, show_name, season_name, logger):
     """
     Rename all files in a directory to Plex library format for watching dir
 
@@ -53,17 +53,17 @@ def reformat_files_for_watch(src_path: str, working_dir: str, show_name, season_
                 moving_path = os.path.join(working_dir, new_file_name)
                 print(f"Moving {file_path} to "
                       f"{moving_path}")
-                logging.info(f"Moving {file_path} to "
-                             f"{moving_path}")
+                logger.info(f"Moving {file_path} to "
+                            f"{moving_path}")
                 # final check
                 if not os.path.exists(os.path.dirname(moving_path)):
                     print(f"Failed moving, {moving_path} parent dir not exist")
-                    logging.error(f"Failed moving, {moving_path} parent dir "
-                                  f"{os.path.exists(os.path.dirname(moving_path))}not exist")
+                    logger.error(f"Failed moving, {moving_path} parent dir "
+                                 f"{os.path.exists(os.path.dirname(moving_path))}not exist")
                     exit(-1)
                 shutil.move(os.path.join(root, file), os.path.join(working_dir, new_file_name))
             else:
-                logging.error(f"Invalid Season name {season_name}")
+                logger.error(f"Invalid Season name {season_name}")
 
 
 def reformat_files(src_path: str, working_dir: str, show_name, season_name):
