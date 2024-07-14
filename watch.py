@@ -218,12 +218,14 @@ def main():
             print(f"Watch {source} not found")
     elif args.refresh:
         print("Refreshing the library... Getting the list of currently downloading torrents")
+        logging.info(f"Getting the list of currently downloading torrents...")
         download_path = get_qbittorrent_info()
         if download_path is None:
             print("Error while getting the list of currently downloading torrents")
             logging.error("Error while getting the list of currently downloading torrents")
             exit(1)
         # print download_path
+        logging.info(f"Got {len(download_path)} torrents ...")
         for key in download_path:
             logging.info(f"Torrents downloading at {key}")
         # get all the watch sources
