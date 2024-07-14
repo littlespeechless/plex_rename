@@ -98,6 +98,7 @@ def get_qbittorrent_info():
         save_path: str = torrent['save_path']
         save_path = save_path.rstrip("/")
         download_path[save_path] = True
+    print(download_path)
     # log out
     qbt_client.auth_log_out()
     return download_path
