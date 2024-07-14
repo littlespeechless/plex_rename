@@ -5,6 +5,7 @@ import os.path
 from logging.handlers import RotatingFileHandler
 
 import rename
+import qbittorrentapi as qbit
 
 
 def add_watch(source, destination, show_name, season, watch_db):
@@ -53,6 +54,55 @@ def add_watch(source, destination, show_name, season, watch_db):
               f"show folder {show_name}, season {season}")
 
 
+def get_qbittorrent_info():
+    """
+    Initialize the qBittorrent client
+    Returns:
+        qbt_client: qBittorrent client
+    """
+    # read from .evn file
+    conn_info = {
+    }
+    if not os.path.exists('.env'):
+        print("Error: .env file not found")
+        logging.error(".env file not found")
+        return None
+    with open('.env', 'r') as f:
+        for line in f:
+            key, value = line.strip().split('=')
+            if key == 'QBITTORRENT_HOST':
+                conn_info['host'] = value
+            elif key == 'QBITTORRENT_PORT':
+                conn_info['port'] = value
+            elif key == 'QBITTORRENT_USER':
+                conn_info['username'] = value
+            elif key == 'QBITTORRENT_PASS':
+                conn_info['password'] = value
+    # Initialize the client
+    qbt_client = qbit.Client(**conn_info)
+    # the Client will automatically acquire/maintain a logged-in state
+    # in line with any request. therefore, this is not strictly necessary;
+    # however, you may want to test the provided login credentials.
+    try:
+        qbt_client.auth_log_in()
+    except qbit.LoginFailed as e:
+        print(e)
+        logging.error(e)
+        return None
+    # list all currently downloading torrents
+    torrents = qbt_client.torrents_info(status_filter='downloading')
+    # now we can return all downloaded torrents save path to watch, such that
+    # we avoid rename and move the epsiodes that are still downloading
+    download_path = {}
+    for torrent in torrents:
+        save_path: str = torrent['save_path']
+        save_path = save_path.rstrip("/")
+        download_path[save_path] = True
+    # log out
+    qbt_client.auth_log_out()
+    return download_path
+
+
 def main():
     """
     Main function for the watch module.
@@ -75,7 +125,13 @@ def main():
     parser.add_argument('-remove', action='store_true', help='Remove a watch')
     parser.add_argument('-update', action='store_true', help='Update a watch')
     parser.add_argument("-refresh", action='store_true', help='Perform a refresh and '
-                                                              'add new episodes to the library')
+                                                              'add new episodes to the library. '
+                                                              'User must create .evn file with qBittorrent client info.'
+                                                              'The .env file should contain the following'
+                                                              ' QBITTORRENT_HOST=<host>, '
+                                                              'QBITTORRENT_PORT=<port>, '
+                                                              'QBITTORRENT_USER=<username>, '
+                                                              'QBITTORRENT_PASS=<password>')
 
     args = parser.parse_args()
 
@@ -98,7 +154,7 @@ def main():
                 f"Adding a new watch with source {args.src}, destination {args.dest}, "
                 f"show-name {args.show_name}, season {args.season}")
             logging.info(f"Adding a new watch with source {args.src}, destination {args.dest}, "
-                        f"show-names {args.show_name}, season {args.season}")
+                         f"show-names {args.show_name}, season {args.season}")
             source = args.src
             destination = args.dest
             show_name = args.show_name
@@ -161,11 +217,24 @@ def main():
         else:
             print(f"Watch {source} not found")
     elif args.refresh:
-        print("Refreshing the library")
+        print("Refreshing the library... Getting the list of currently downloading torrents")
+        download_path = get_qbittorrent_info()
+        if not download_path:
+            print("Error while getting the list of currently downloading torrents")
+            logging.error("Error while getting the list of currently downloading torrents")
+            exit(1)
+        # print download_path
+        for key in download_path:
+            logging.info(f"Torrents downloading at {key}")
+        # get all the watch sources
         logging.info(f"Refreshing all {len(watch_db)} watches")
         for key, value in watch_db.items():
             print(f"Refreshing {key}")
             logging.info(f"Refreshing {key}")
+            if key in download_path:
+                print(f"Skipping {key} as it is still downloading")
+                logging.info(f"Skipping {key} as it is still downloading")
+                continue
             rename.reformat_files_for_watch(key, value['dest'], value['show_name'], value['season'])
 
     # save the watch database
@@ -175,7 +244,6 @@ def main():
 
 
 if __name__ == '__main__':
-
     # Configure logging with RotatingFileHandler
 
     # Create a RotatingFileHandler
