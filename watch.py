@@ -98,7 +98,6 @@ def get_qbittorrent_info():
         save_path: str = torrent['save_path']
         save_path = save_path.rstrip("/")
         download_path[save_path] = True
-    print(download_path)
     # log out
     qbt_client.auth_log_out()
     return download_path
@@ -220,7 +219,7 @@ def main():
     elif args.refresh:
         print("Refreshing the library... Getting the list of currently downloading torrents")
         download_path = get_qbittorrent_info()
-        if not download_path:
+        if download_path is None:
             print("Error while getting the list of currently downloading torrents")
             logging.error("Error while getting the list of currently downloading torrents")
             exit(1)
