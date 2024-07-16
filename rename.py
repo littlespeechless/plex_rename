@@ -143,6 +143,10 @@ def reformat_files(src_path: str, working_dir: str, show_name, season_name):
             if reformat_all or move:
                 print(f"Moving {os.path.join(root, file)} to "
                       f"{os.path.join(working_dir, new_file_name)}")
+                # check file path exist or not
+                if not os.path.exists(working_dir):
+                    print(f"Workingdir {working_dir} not exists")
+                    exit(-1)
                 shutil.move(os.path.join(root, file), os.path.join(working_dir, new_file_name))
 
 
@@ -213,7 +217,11 @@ def main():
     args = parser.parse_args()
     # print arguments
     src_path = args.src
+    if src_path[0] == "~":
+        src_path = os.path.expanduser(src_path)
     dest_path = args.dest
+    if dest_path[0] == "~":
+        dest_path = os.path.expanduser(dest_path)
 
     # print(f"Please enter the show name: ")
     # show_name = input()
