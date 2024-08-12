@@ -252,7 +252,7 @@ def main():
             new_watch_db[new_source] = value
         # save the watch database
         with open(watch_db_path, 'w') as f:
-            json.dump(watch_db, f, indent=4)
+            json.dump(new_watch_db, f, indent=4)
     # save the watch database
     if args.add or args.remove or args.update:
         with open(watch_db_path, 'w') as f:
