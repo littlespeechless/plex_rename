@@ -2,6 +2,7 @@ import argparse
 import json
 import logging
 import os.path
+import pathlib
 from logging.handlers import RotatingFileHandler
 
 import rename
@@ -45,11 +46,11 @@ def add_watch(source, destination, show_name, season, watch_db):
             os.makedirs(working_dir, exist_ok=True)
         # reformat the files and move them to the destination
         rename.reformat_files_for_watch(source, working_dir, show_name, season)
-        watch_db[source] = {"dest": working_dir, "show_name": show_name, "season": season}
+        watch_db[source.rstrip("/")] = {"dest": working_dir, "show_name": show_name, "season": season}
         print(f"Watch {source} added successfully, with destination {working_dir}, "
               f"show_name {show_name}, season {season}")
     else:
-        watch_db[source] = {"dest": destination, "show_name": show_name, "season": season}
+        watch_db[source.rstrip("/")] = {"dest": destination, "show_name": show_name, "season": season}
         print(f"Watch {source} added successfully, with destination {destination}, "
               f"show folder {show_name}, season {season}")
 
@@ -132,6 +133,8 @@ def main():
                                                               'QBITTORRENT_PORT=<port>, '
                                                               'QBITTORRENT_USER=<username>, '
                                                               'QBITTORRENT_PASS=<password>')
+    parser.add_argument('-fix-source', action='store_true', help='Fix the source path of the watch')
+
 
     args = parser.parse_args()
 
@@ -193,6 +196,7 @@ def main():
         else:
             print("Please enter the source path")
             source = input()
+            source = source.rstrip("/")
         if source in watch_db:
             del watch_db[source]
             print(f"Watch {source} removed successfully")
@@ -204,6 +208,7 @@ def main():
         else:
             print("Please enter the source path")
             source = input()
+            source = source.rstrip("/")
         if source in watch_db:
             print("Please enter the destination path")
             destination = input()
@@ -238,7 +243,16 @@ def main():
                 logging.info(f"Skipping {key} as it is still downloading")
                 continue
             rename.reformat_files_for_watch(key, value['dest'], value['show_name'], value['season'])
-
+    elif args.fix_source:
+        print("Fixing the source path of the watch")
+        logging.info("Fixing the source path of the watch")
+        new_watch_db = {}
+        for key, value in watch_db.items():
+            new_source = key.rstrip("/")
+            new_watch_db[new_source] = value
+        # save the watch database
+        with open(watch_db_path, 'w') as f:
+            json.dump(watch_db, f, indent=4)
     # save the watch database
     if args.add or args.remove or args.update:
         with open(watch_db_path, 'w') as f:
