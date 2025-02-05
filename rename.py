@@ -42,7 +42,7 @@ def reformat_files_for_watch(src_path: str, working_dir: str, show_name, season_
                 file_ext = file.split(".")[-1]
                 if file_ext == "ass":
                     ass_lang = file.split(".")[-2]
-                    if len(ass_lang) > 3:
+                    if len(ass_lang) >= 3:
                         # case of no ass lang
                         new_file_name = f"{show_name} S{season_number}E{episode_number}.{file_ext}"
                     else:
